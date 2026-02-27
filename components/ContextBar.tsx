@@ -3,6 +3,62 @@
 import { useState } from 'react'
 import { ENTITIES } from '@/components/data'
 
+const MILESTONES = [
+  'Agenda set',
+  'Papers requested',
+  'Papers received',
+  'Pack drafted',
+  'In review',
+  'Approved',
+]
+
+function getCurrentMilestoneIndex(completion: number): number {
+  if (completion >= 96) return 5
+  if (completion >= 81) return 4
+  if (completion >= 61) return 3
+  if (completion >= 41) return 2
+  if (completion >= 21) return 1
+  if (completion >= 1) return 0
+  return -1
+}
+
+function MilestoneTracker({ completion }: { completion: number }) {
+  const currentIdx = getCurrentMilestoneIndex(completion)
+
+  return (
+    <div className="flex flex-col gap-1.5 w-full">
+      <div className="flex items-center w-full">
+        {MILESTONES.map((_, i) => (
+          <div
+            key={i}
+            className={`flex items-center ${i < MILESTONES.length - 1 ? 'flex-1' : ''}`}
+          >
+            <div
+              className={`w-3 h-3 rounded-full flex-shrink-0 ${
+                i < currentIdx
+                  ? 'bg-slate-500'
+                  : i === currentIdx
+                  ? 'bg-blue-500'
+                  : 'bg-slate-200'
+              }`}
+            />
+            {i < MILESTONES.length - 1 && (
+              <div
+                className={`flex-1 h-px ${
+                  i < currentIdx ? 'bg-slate-500' : 'bg-slate-200'
+                }`}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+      <span className="text-xs text-slate-400 leading-none">
+        {currentIdx >= 0 ? MILESTONES[currentIdx] : 'Not started'}
+      </span>
+    </div>
+  )
+}
+
 export default function ContextBar() {
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -34,37 +90,38 @@ export default function ContextBar() {
         </button>
       </div>
 
-      <div className={`overflow-hidden transition-all duration-200 ${isExpanded ? 'max-h-[480px]' : 'max-h-0'}`}>
+      <div className={`overflow-hidden transition-all duration-200 ${isExpanded ? 'max-h-[540px]' : 'max-h-0'}`}>
         <div className="px-6 pb-3">
           <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
-            <div className="grid grid-cols-[2fr_1fr_1.5fr_3fr_auto_auto] gap-x-4 items-center px-4 py-2 border-b border-slate-100">
+            <div className="grid grid-cols-[2fr_1fr_1.5fr_4fr_auto] gap-x-4 items-center px-4 py-2 border-b border-slate-100">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Entity</span>
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Country</span>
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Next Board</span>
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Next Board Meeting</span>
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Progress</span>
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide w-8 text-right">%</span>
               <span></span>
             </div>
             {ENTITIES.map(entity => (
               <div
                 key={entity.id}
-                className="grid grid-cols-[2fr_1fr_1.5fr_3fr_auto_auto] gap-x-4 items-center px-4 py-2.5 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors"
+                role="button"
+                tabIndex={0}
+                className="grid grid-cols-[2fr_1fr_1.5fr_4fr_auto] gap-x-4 items-center px-4 py-3 border-b border-slate-50 last:border-0 hover:bg-slate-50 active:bg-slate-100 transition-colors cursor-pointer"
               >
                 <span className="text-sm font-medium text-slate-800 truncate">{entity.shortName}</span>
                 <span className="text-xs text-slate-500">{entity.countryCode}</span>
                 <span className="text-xs text-slate-500">{entity.nextBoard}</span>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-slate-700 rounded-full transition-all"
-                      style={{ width: `${entity.completion}%` }}
-                    />
-                  </div>
-                </div>
-                <span className="text-xs text-slate-600 w-8 text-right tabular-nums">{entity.completion}%</span>
-                <button className="text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors whitespace-nowrap ml-2">
-                  {entity.completion >= 90 ? 'Review' : 'Resume'}
-                </button>
+                <MilestoneTracker completion={entity.completion} />
+                <svg
+                  className="w-4 h-4 text-slate-300 flex-shrink-0"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M6 4l4 4-4 4" />
+                </svg>
               </div>
             ))}
           </div>
