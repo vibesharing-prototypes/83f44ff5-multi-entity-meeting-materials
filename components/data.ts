@@ -147,17 +147,80 @@ export const ACTION_ITEMS: ActionItem[] = [
   },
 ]
 
+export interface EditSuggestion {
+  id: number
+  entities: Array<{ tag: string; tagColor: string }>
+  sourceType: 'regulation' | 'market' | 'source-material'
+  sourceLabel: string
+  title: string
+  reason: string
+  suggestedPrompt: string
+}
+
+export const EDIT_SUGGESTIONS: EditSuggestion[] = [
+  {
+    id: 1,
+    entities: [{ tag: 'APEX VENTURES', tagColor: 'bg-amber-700' }],
+    sourceType: 'regulation',
+    sourceLabel: 'EU AI Act',
+    title: 'Update AI Act compliance deadline in Risk section',
+    reason: 'EU AI Act enforcement guidelines revised 24 Feb 2026 — key deadline shifted from Q2 to Q3 2026.',
+    suggestedPrompt: 'Update the Risk & Compliance section for Apex Ventures to reflect the revised EU AI Act enforcement deadline (Q3 2026) and adjust the remediation budget timeline accordingly.',
+  },
+  {
+    id: 2,
+    entities: [{ tag: 'MERIDIAN CAPITAL', tagColor: 'bg-blue-700' }],
+    sourceType: 'regulation',
+    sourceLabel: 'FCA Guidance',
+    title: 'Reference updated FCA Consumer Duty guidance in CEO Report',
+    reason: 'FCA published updated Consumer Duty implementation guidance on 1 Mar 2026, affecting all UK authorised firms.',
+    suggestedPrompt: "Add a paragraph to Meridian Capital's CEO Report referencing the FCA's updated Consumer Duty guidance (Mar 2026) and the entity's current compliance posture.",
+  },
+  {
+    id: 3,
+    entities: [{ tag: 'HORIZON DIGITAL', tagColor: 'bg-violet-700' }],
+    sourceType: 'market',
+    sourceLabel: 'ECB Rate Cut',
+    title: 'Revise FX hedging commentary — ECB rate now 2.90%',
+    reason: 'ECB cut rates 25bps to 2.90% on 6 Mar 2026. Pack currently references the superseded rate of 3.15%.',
+    suggestedPrompt: "Update Horizon Digital's Q4 Financial Statements to reflect the ECB rate cut to 2.90% (6 Mar 2026) and revise all FX hedging commentary to align with the current rate environment.",
+  },
+  {
+    id: 4,
+    entities: [{ tag: 'ATLANTIC RESOURCES', tagColor: 'bg-emerald-700' }],
+    sourceType: 'source-material',
+    sourceLabel: 'Auditor Revision',
+    title: 'Reconcile EBITDA — PwC revised Q4 management accounts',
+    reason: 'PwC submitted revised management accounts on 28 Feb 2026. EBITDA now £2.6m; pack currently states £2.8m.',
+    suggestedPrompt: "Reconcile the Q4 Financial Statements for Atlantic Resources with PwC's revised management accounts (28 Feb 2026): update EBITDA from £2.8m to £2.6m and recalculate the EBITDA margin.",
+  },
+  {
+    id: 5,
+    entities: [
+      { tag: 'APEX VENTURES', tagColor: 'bg-amber-700' },
+      { tag: 'HORIZON DIGITAL', tagColor: 'bg-violet-700' },
+      { tag: 'NORDIC SOLUTIONS', tagColor: 'bg-indigo-700' },
+      { tag: 'IBERIAN HOLDINGS', tagColor: 'bg-orange-700' },
+    ],
+    sourceType: 'regulation',
+    sourceLabel: 'CSRD',
+    title: 'Add mandatory ESG disclosure section to all EU entity board packs',
+    reason: 'CSRD mandatory reporting applies from Jan 2026 for qualifying EU entities. No ESG disclosure section exists in any of the 4 affected packs.',
+    suggestedPrompt: 'Add an ESG disclosure section to board packs for Apex Ventures, Horizon Digital, Nordic Solutions, and Iberian Holdings, covering scope 1 & 2 emissions, social metrics, and board oversight of sustainability strategy as required under CSRD.',
+  },
+]
+
 export const PROMPT_STARTERS: string[] = [
-  'Plan quarterly meetings for all entities',
+  'Which packs are at risk this quarter?',
   'Create board pack',
-  'Draft minutes',
-  'Add agenda item across all entities',
+  'Show all outstanding director signatures',
+  'Draft a circular resolution across entities',
 ]
 
 export const INITIAL_MESSAGES: ChatMessage[] = [
   {
     id: 1,
     role: 'assistant',
-    content: 'Ready. 6 of 8 board packs are in progress for Q1 2026. Four items need your attention before I can proceed.',
+    content: 'Q1 2026 pack status: 6 of 8 entities are in progress. Most urgent — Pacific Rim Ops meets on 7 March and Q4 Financials are still missing from Finance. Atlantic Resources is nearly done, pending chair sign-off only. Four items need your review before I can proceed.',
   },
 ]

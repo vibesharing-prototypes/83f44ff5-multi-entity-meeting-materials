@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { ENTITIES } from '@/components/data'
+import EntityLogo from '@/components/EntityLogo'
 
 const MILESTONES = [
   'Agenda set',
@@ -43,11 +45,7 @@ function MilestoneTracker({ completion }: { completion: number }) {
               }`}
             />
             {i < MILESTONES.length - 1 && (
-              <div
-                className={`flex-1 h-px ${
-                  i < currentIdx ? 'bg-slate-500' : 'bg-slate-200'
-                }`}
-              />
+              <div className={`flex-1 h-px ${i < currentIdx ? 'bg-slate-500' : 'bg-slate-200'}`} />
             )}
           </div>
         ))}
@@ -59,25 +57,49 @@ function MilestoneTracker({ completion }: { completion: number }) {
   )
 }
 
-export default function ContextBar() {
+interface ContextBarProps {
+  currentEntityId?: number
+}
+
+export default function ContextBar({ currentEntityId }: ContextBarProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const inProgress = ENTITIES.filter(e => e.completion > 0 && e.completion < 100).length
+  const approved = ENTITIES.filter(e => e.completion >= 96).length
 
   return (
     <div className="border-b border-slate-200 bg-slate-50 flex-shrink-0">
-      <div className="px-6 py-2.5 flex items-center justify-between">
-        <span className="text-sm text-slate-600 font-medium">
-          {ENTITIES.length} Entities&nbsp;&nbsp;·&nbsp;&nbsp;Q1 2026&nbsp;&nbsp;·&nbsp;&nbsp;{inProgress} of {ENTITIES.length} board packs in progress
-        </span>
+      {/* Header strip */}
+      <div className="px-6 py-3.5 flex items-center justify-between">
+        <div className="flex items-center gap-5">
+          <span className="text-sm font-semibold text-slate-700">
+            {ENTITIES.length} Entities
+          </span>
+          <span className="h-4 w-px bg-slate-300" />
+          <span className="text-sm text-slate-500">Q1 2026</span>
+          <span className="h-4 w-px bg-slate-300" />
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+              {inProgress} in progress
+            </span>
+            {approved > 0 && (
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                {approved} approved
+              </span>
+            )}
+          </div>
+        </div>
+
         <button
           onClick={() => setIsExpanded(v => !v)}
-          className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-700 transition-colors font-medium"
           aria-expanded={isExpanded}
+          className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 hover:border-slate-400 active:bg-slate-100 transition-colors shadow-sm"
         >
-          {isExpanded ? 'Hide details' : 'Show details'}
+          Manage entities
           <svg
-            className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+            className={`w-3.5 h-3.5 text-slate-500 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
             viewBox="0 0 16 16"
             fill="none"
             stroke="currentColor"
@@ -90,43 +112,70 @@ export default function ContextBar() {
         </button>
       </div>
 
-      <div className={`overflow-hidden transition-all duration-200 ${isExpanded ? 'max-h-[540px]' : 'max-h-0'}`}>
-        <div className="px-6 pb-3">
-          <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
-            <div className="grid grid-cols-[2fr_1fr_1.5fr_4fr_auto] gap-x-4 items-center px-4 py-2 border-b border-slate-100">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Entity</span>
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Country</span>
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Next Board Meeting</span>
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Progress</span>
-              <span></span>
+      {/* Expandable panel */}
+      <div className={`overflow-hidden transition-all duration-200 ${isExpanded ? 'max-h-[640px]' : 'max-h-0'}`}>
+        <div className="px-6 pb-4">
+          <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-lg">
+
+            {/* Table header */}
+            <div className="grid grid-cols-[2.5fr_1.5fr_1.5fr_3.5fr_auto] gap-x-4 items-center px-5 py-3 bg-slate-50 border-b border-slate-200">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Entity</span>
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Country</span>
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Next Board Meeting</span>
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Progress</span>
+              <span />
             </div>
-            {ENTITIES.map(entity => (
-              <div
-                key={entity.id}
-                role="button"
-                tabIndex={0}
-                className="grid grid-cols-[2fr_1fr_1.5fr_4fr_auto] gap-x-4 items-center px-4 py-3 border-b border-slate-50 last:border-0 hover:bg-slate-50 active:bg-slate-100 transition-colors cursor-pointer"
-              >
-                <span className="text-sm font-medium text-slate-800 truncate">{entity.shortName}</span>
-                <span className="text-xs text-slate-500">{entity.countryCode}</span>
-                <span className="text-xs text-slate-500">{entity.nextBoard}</span>
-                <MilestoneTracker completion={entity.completion} />
-                <svg
-                  className="w-4 h-4 text-slate-300 flex-shrink-0"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+
+            {/* Entity rows */}
+            {ENTITIES.map(entity => {
+              const isActive = entity.id === currentEntityId
+              return (
+                <Link
+                  key={entity.id}
+                  href={`/entity/${entity.id}`}
+                  className={`grid grid-cols-[2.5fr_1.5fr_1.5fr_3.5fr_auto] gap-x-4 items-center px-5 py-4 border-b border-slate-100 last:border-0 transition-colors cursor-pointer ${
+                    isActive ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-slate-50 active:bg-slate-100'
+                  }`}
                 >
-                  <path d="M6 4l4 4-4 4" />
-                </svg>
-              </div>
-            ))}
+                  {/* Entity name + logo */}
+                  <div className="flex items-center gap-3 min-w-0">
+                    <EntityLogo entity={entity} />
+                    <div className="min-w-0">
+                      <p className={`text-sm font-semibold leading-snug truncate ${isActive ? 'text-blue-700' : 'text-slate-800'}`}>
+                        {entity.shortName}
+                      </p>
+                      <p className="text-xs text-slate-400 truncate mt-0.5">{entity.name}</p>
+                    </div>
+                  </div>
+
+                  {/* Country */}
+                  <span className="text-xs text-slate-500">{entity.country}</span>
+
+                  {/* Next board */}
+                  <span className="text-xs text-slate-600 font-medium">{entity.nextBoard}</span>
+
+                  {/* Milestone tracker */}
+                  <MilestoneTracker completion={entity.completion} />
+
+                  {/* Chevron */}
+                  <svg
+                    className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-blue-400' : 'text-slate-300'}`}
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M6 4l4 4-4 4" />
+                  </svg>
+                </Link>
+              )
+            })}
           </div>
         </div>
       </div>
     </div>
   )
 }
+

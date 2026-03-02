@@ -3,16 +3,21 @@ import { ACTION_ITEMS } from '@/components/data'
 export default function NeedsYouNow() {
   return (
     <section>
-      <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
-        Needs You Now
-      </h2>
+      <div className="mb-3">
+        <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+          Action Items
+        </h2>
+        <p className="text-xs text-slate-400 mt-0.5">
+          Blockers and decisions needed to progress your board packs
+        </p>
+      </div>
       <div className="rounded-lg border border-slate-200 bg-white divide-y divide-slate-100">
         {ACTION_ITEMS.map(item => (
           <div
             key={item.id}
-            className="flex items-center justify-between gap-6 px-4 py-4"
+            className="flex items-start gap-4 px-4 py-4"
           >
-            <div className="min-w-0">
+            <div className="flex-1 min-w-0">
               <span
                 className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold tracking-wide text-white ${item.tagColor}`}
               >
@@ -25,7 +30,7 @@ export default function NeedsYouNow() {
                 {item.description}
               </p>
             </div>
-            <button className="flex-shrink-0 text-xs font-medium text-white bg-slate-800 hover:bg-slate-700 active:bg-slate-900 px-3 py-1.5 rounded transition-colors whitespace-nowrap">
+            <button className="self-start flex-shrink-0 mt-0.5 text-xs font-medium text-slate-600 bg-white border border-slate-200 hover:border-slate-400 hover:bg-slate-50 active:bg-slate-100 px-3 py-1.5 rounded-md transition-colors whitespace-nowrap">
               {item.actionLabel}
             </button>
           </div>
